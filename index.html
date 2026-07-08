@@ -177,6 +177,33 @@
     transition:transform .3s cubic-bezier(.2,1.6,.4,1);
   }
   #toast.show{transform:translate(-50%,-50%) scale(1) rotate(-6deg)}
+
+  /* ---------- scolding comic lady popup ---------- */
+  #character{
+    position:fixed;inset:0;z-index:10001;display:none;
+    align-items:center;justify-content:center;cursor:pointer;
+    background:rgba(17,17,17,.45);
+  }
+  #character.show{display:flex;animation:fadein .18s ease}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  #character .stage{
+    display:flex;flex-direction:column;align-items:center;gap:0;
+    transform:scale(0) rotate(-10deg);
+  }
+  #character.show .stage{animation:bounceIn .5s cubic-bezier(.2,1.6,.35,1) forwards}
+  @keyframes bounceIn{to{transform:scale(1) rotate(-3deg)}}
+  #character .bubble{
+    position:relative;background:#fff;border:5px solid var(--ink);border-radius:18px;
+    padding:16px 26px;max-width:340px;text-align:center;box-shadow:8px 8px 0 var(--ink);
+    font-family:'Bangers',cursive;font-size:clamp(24px,6vw,40px);letter-spacing:1px;color:var(--red);
+    margin-bottom:6px;z-index:2;
+  }
+  #character .bubble:after{content:"";position:absolute;left:50%;bottom:-24px;margin-left:-14px;
+    border:14px solid transparent;border-top-color:var(--ink);border-bottom:0}
+  #character .bubble:before{content:"";position:absolute;left:50%;bottom:-14px;margin-left:-9px;z-index:1;
+    border:9px solid transparent;border-top-color:#fff;border-bottom:0}
+  #character svg{width:clamp(180px,44vw,240px);height:auto;filter:drop-shadow(6px 6px 0 var(--ink))}
+  #character .hint{margin-top:10px;font-family:'Baloo 2',sans-serif;font-weight:700;color:#fff;font-size:14px;opacity:.8}
 </style>
 </head>
 <body>
@@ -225,6 +252,52 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- scolding retro-comic lady -->
+<div id="character">
+  <div class="stage">
+    <div class="bubble" id="charBubble">Markus, schling nicht!</div>
+    <svg viewBox="0 0 220 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- hair back -->
+      <path d="M40 122 Q28 30 110 24 Q192 30 180 122 Q188 178 150 205 L70 205 Q32 178 40 122 Z"
+            fill="#ffd200" stroke="#111" stroke-width="4"/>
+      <!-- neck -->
+      <rect x="92" y="186" width="36" height="42" rx="4" fill="#ffcfa6" stroke="#111" stroke-width="4"/>
+      <!-- face -->
+      <ellipse cx="110" cy="122" rx="56" ry="64" fill="#ffe0c2" stroke="#111" stroke-width="4"/>
+      <!-- side hair strands -->
+      <path d="M54 104 Q42 154 60 198 Q48 152 64 122 Z" fill="#ffd200" stroke="#111" stroke-width="4"/>
+      <path d="M166 104 Q178 154 160 198 Q172 152 156 122 Z" fill="#ffd200" stroke="#111" stroke-width="4"/>
+      <!-- bangs -->
+      <path d="M56 98 Q68 52 110 50 Q152 52 164 98 Q140 74 110 78 Q80 74 56 98 Z"
+            fill="#ffd200" stroke="#111" stroke-width="4"/>
+      <!-- angry eyebrows -->
+      <path d="M74 98 L102 108" stroke="#111" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M146 98 L118 108" stroke="#111" stroke-width="5.5" stroke-linecap="round"/>
+      <!-- eyes -->
+      <ellipse cx="88" cy="120" rx="15" ry="11" fill="#fff" stroke="#111" stroke-width="3.5"/>
+      <ellipse cx="132" cy="120" rx="15" ry="11" fill="#fff" stroke="#111" stroke-width="3.5"/>
+      <circle cx="90" cy="121" r="5.5" fill="#2a86c8"/><circle cx="90" cy="121" r="2.6" fill="#111"/>
+      <circle cx="134" cy="121" r="5.5" fill="#2a86c8"/><circle cx="134" cy="121" r="2.6" fill="#111"/>
+      <!-- eyelashes -->
+      <path d="M73 114 l-9 -4 M74 118 l-10 -1" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+      <path d="M147 114 l9 -4 M146 118 l10 -1" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+      <!-- nose -->
+      <path d="M110 126 q7 12 -3 18" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+      <!-- open scolding mouth -->
+      <path d="M90 160 Q110 152 130 160 Q120 178 110 178 Q100 178 90 160 Z"
+            fill="#e60023" stroke="#111" stroke-width="3.5"/>
+      <path d="M95 161 Q110 156 125 161" fill="none" stroke="#fff" stroke-width="2.5"/>
+      <path d="M100 170 Q110 174 120 170" fill="none" stroke="#fff" stroke-width="2"/>
+      <!-- halftone blush -->
+      <g fill="#ff9db0">
+        <circle cx="66" cy="146" r="2.4"/><circle cx="74" cy="146" r="2.4"/><circle cx="70" cy="152" r="2.4"/>
+        <circle cx="146" cy="146" r="2.4"/><circle cx="154" cy="146" r="2.4"/><circle cx="150" cy="152" r="2.4"/>
+      </g>
+    </svg>
+    <div class="hint">tap to dismiss</div>
+  </div>
+</div>
 
 <script>
 /* =========================================================================
@@ -377,7 +450,7 @@ async function submit(){
     if(existing){ if(cals>existing.calories) Object.assign(existing,entry); } else entries.push(entry);
     await saveEntries(entries);
     renderBoard(entries);
-    toast("POW! "+cals.toLocaleString()+"!");
+    showCharacter(name);
     cart.clear();
     document.querySelectorAll(".item").forEach(el=>{el.classList.remove("picked");el.querySelector(".qty").textContent="";});
     recalc();
@@ -389,6 +462,16 @@ async function submit(){
 let toastT;
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
   clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2000); }
+
+// ---------- scolding lady popup ----------
+let charT;
+function showCharacter(name){
+  $("charBubble").textContent = (name||"Du")+", schling nicht!";
+  const c=$("character"); c.classList.remove("show"); void c.offsetWidth; c.classList.add("show");
+  clearTimeout(charT); charT=setTimeout(hideCharacter, 2800);
+}
+function hideCharacter(){ clearTimeout(charT); $("character").classList.remove("show"); }
+$("character").addEventListener("click", hideCharacter);
 
 // ---------- init ----------
 buildMenu(); refreshAvatar(); refreshBoard();
