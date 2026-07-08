@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>McMAXX — MAXIMUM CALORIE ARENA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#05060a;
+    --neon:#39ff14;
+    --hot:#ff2a2a;
+    --gold:#ffd000;
+    --cyan:#00e5ff;
+    --panel:#0b0f1a;
+    --grid:rgba(57,255,20,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:#e8ffe8}
+  body{
+    font-family:'VT323',monospace;
+    font-size:22px;
+    min-height:100vh;
+    overflow-x:hidden;
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:32px 32px;
+  }
+  /* CRT scanline + flicker overlay */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);
+    mix-blend-mode:multiply;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
+    background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);
+  }
+  .pixel{font-family:'Press Start 2P',monospace}
+
+  header{
+    text-align:center;padding:28px 16px 8px;position:relative;z-index:1;
+  }
+  h1.title{
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(24px,7vw,64px);
+    margin:0;line-height:1.15;
+    color:var(--gold);
+    text-shadow:
+      3px 3px 0 var(--hot),
+      -2px -2px 0 var(--cyan),
+      0 0 18px rgba(255,208,0,.6);
+    animation:wob 3s ease-in-out infinite;
+  }
+  @keyframes wob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+  .subtitle{
+    font-family:'Press Start 2P',monospace;font-size:clamp(9px,2.2vw,13px);
+    color:var(--neon);margin-top:14px;letter-spacing:1px;
+    text-shadow:0 0 10px rgba(57,255,20,.7);
+  }
+  .blink{animation:blink 1s steps(2,start) infinite}
+  @keyframes blink{to{visibility:hidden}}
+
+  main{
+    max-width:1080px;margin:0 auto;padding:12px 16px 80px;
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative;z-index:1;
+  }
+  @media(max-width:840px){main{grid-template-columns:1fr}}
+
+  .panel{
+    background:linear-gradient(180deg,var(--panel),#070a12);
+    border:3px solid var(--neon);
+    border-radius:6px;
+    box-shadow:0 0 0 3px #000,0 0 22px rgba(57,255,20,.25),inset 0 0 30px rgba(57,255,20,.05);
+    padding:18px;
+  }
+  .panel h2{
+    font-family:'Press Start 2P',monospace;font-size:13px;margin:0 0 16px;
+    color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,.6);
+  }
+
+  label.fld{display:block;font-size:20px;color:var(--gold);margin:14px 0 4px}
+  input[type=text]{
+    width:100%;background:#02030a;border:2px solid var(--cyan);color:var(--neon);
+    font-family:'VT323',monospace;font-size:24px;padding:10px 12px;border-radius:4px;outline:none;
+  }
+  input[type=text]:focus{box-shadow:0 0 14px rgba(0,229,255,.6)}
+
+  .avatar-preview{display:flex;align-items:center;gap:14px;margin-top:14px}
+  .avatar-preview img{
+    width:84px;height:84px;background:#000;border:2px solid var(--hot);border-radius:6px;
+    box-shadow:0 0 14px rgba(255,42,42,.5);image-rendering:pixelated;
+  }
+  .reroll{
+    font-family:'Press Start 2P',monospace;font-size:9px;cursor:pointer;
+    background:#000;color:var(--gold);border:2px solid var(--gold);padding:8px 10px;border-radius:4px;
+  }
+  .reroll:hover{background:var(--gold);color:#000}
+
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:420px;overflow-y:auto;padding-right:6px}
+  @media(max-width:480px){.menu-grid{grid-template-columns:1fr}}
+  .item{
+    display:flex;justify-content:space-between;align-items:center;gap:6px;
+    background:#02030a;border:2px solid #1d3b1d;border-radius:4px;padding:8px 10px;cursor:pointer;
+    transition:transform .05s,border-color .1s,background .1s;user-select:none;
+  }
+  .item:hover{border-color:var(--neon)}
+  .item.picked{border-color:var(--hot);background:rgba(255,42,42,.12);box-shadow:0 0 12px rgba(255,42,42,.35)}
+  .item .nm{font-size:19px;line-height:1.05}
+  .item .kc{font-size:15px;color:var(--gold);white-space:nowrap}
+  .item .qty{
+    font-family:'Press Start 2P',monospace;font-size:9px;color:var(--hot);
+    min-width:22px;text-align:right;
+  }
+
+  .total{
+    font-family:'Press Start 2P',monospace;font-size:16px;text-align:center;margin:16px 0;
+    color:var(--hot);text-shadow:0 0 12px rgba(255,42,42,.7);
+  }
+  .btn-submit{
+    width:100%;font-family:'Press Start 2P',monospace;font-size:14px;cursor:pointer;
+    background:var(--hot);color:#fff;border:none;padding:16px;border-radius:6px;
+    text-shadow:2px 2px 0 #7a0000;box-shadow:0 6px 0 #7a0000,0 0 20px rgba(255,42,42,.6);
+    transition:transform .05s,box-shadow .05s;
+  }
+  .btn-submit:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0000}
+  .btn-submit:disabled{background:#333;box-shadow:0 6px 0 #111;cursor:not-allowed;color:#777;text-shadow:none}
+
+  /* leaderboard */
+  ol.board{list-style:none;margin:0;padding:0;counter-reset:rank}
+  li.row{
+    display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:2px dashed #143a14;
+    animation:pop .35s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+  li.row .pos{
+    font-family:'Press Start 2P',monospace;font-size:14px;color:var(--gold);min-width:44px;
+  }
+  li.row img{width:52px;height:52px;border:2px solid var(--cyan);border-radius:6px;background:#000;image-rendering:pixelated}
+  li.row .who{flex:1;min-width:0}
+  li.row .who .name{font-size:24px;color:#eaffea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  li.row .who .ate{font-size:15px;color:#7fbf7f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  li.row .cal{font-family:'Press Start 2P',monospace;font-size:14px;color:var(--hot);text-shadow:0 0 8px rgba(255,42,42,.6);white-space:nowrap}
+  li.row.gold{background:linear-gradient(90deg,rgba(255,208,0,.15),transparent)}
+  li.row.gold .pos{color:#fff;text-shadow:0 0 10px var(--gold)}
+  li.row.silver{background:linear-gradient(90deg,rgba(200,200,220,.10),transparent)}
+  li.row.bronze{background:linear-gradient(90deg,rgba(205,127,50,.12),transparent)}
+
+  .status{font-size:16px;text-align:center;margin-top:12px;color:#5f9f5f}
+  .status.err{color:var(--hot)}
+  .footer{text-align:center;font-size:15px;color:#3f6f3f;padding:20px}
+  .footer code{color:var(--gold)}
+
+  /* toast */
+  #toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120%);
+    background:#000;border:3px solid var(--gold);color:var(--gold);
+    font-family:'Press Start 2P',monospace;font-size:11px;padding:14px 18px;border-radius:6px;
+    box-shadow:0 0 24px rgba(255,208,0,.6);z-index:10000;transition:transform .3s;text-align:center;
+  }
+  #toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="title">McMAXX</h1>
+  <div class="subtitle">◆ MAXIMUM&nbsp;CALORIE&nbsp;ARENA ◆<br><span class="blink">INSERT COIN — EAT TO WIN</span></div>
+</header>
+
+<main>
+  <!-- LEFT: entry -->
+  <section class="panel">
+    <h2>&gt; NEW RUN</h2>
+
+    <label class="fld" for="name">PLAYER TAG</label>
+    <input id="name" type="text" maxlength="16" placeholder="e.g. GREASE_GOBLIN" autocomplete="off" />
+
+    <div class="avatar-preview">
+      <img id="avatar" alt="your avatar" />
+      <button class="reroll" id="reroll">RE-ROLL BEAST</button>
+    </div>
+
+    <label class="fld">WHAT DID YOU DESTROY?</label>
+    <div class="menu-grid" id="menu"></div>
+
+    <div class="total" id="total">TOTAL: 0 KCAL</div>
+    <button class="btn-submit" id="submit" disabled>SLAM IT ON THE BOARD</button>
+    <div class="status" id="entryStatus"></div>
+  </section>
+
+  <!-- RIGHT: leaderboard -->
+  <section class="panel">
+    <h2>&gt; HALL OF GLUTTONY</h2>
+    <ol class="board" id="board"></ol>
+    <div class="status" id="boardStatus">loading…</div>
+  </section>
+</main>
+
+<div class="footer">
+  scores <span id="mode">saved locally</span> · avatars by dicebear · not affiliated with mcdonald's, obviously
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================================
+   ⚙️  CONFIG — flip to SHARED cloud leaderboard here.
+   -------------------------------------------------------------------------
+   Out of the box this works SOLO (scores saved in your own browser).
+   To make ONE shared leaderboard all your friends see:
+     1. Make a free account at https://jsonbin.io
+     2. Create a new bin. Paste this as its content and SAVE:
+            { "entries": [] }
+     3. Copy the BIN ID (in the bin's URL / "API" panel) into BIN_ID below.
+     4. Account → API Keys → copy your X-MASTER-KEY into MASTER_KEY below.
+     5. (Recommended) In the bin, set it to PRIVATE so only your key writes.
+     6. Re-upload index.html. Done — everyone shares one board.
+   ========================================================================= */
+const CONFIG = {
+  BIN_ID:     "",   // e.g. "66f0a1b2ac..."  ← leave "" for solo/local mode
+  MASTER_KEY: "",   // e.g. "$2a$10$....."   ← your JSONBin X-Master-Key
+};
+/* ========================================================================= */
+
+// ---- McDonald's menu (approx US kcal). Tweak freely. ----
+const MENU = [
+  ["🍔 Big Mac", 550],
+  ["🧀 Quarter Pounder w/ Cheese", 520],
+  ["🧀🧀 Double Quarter Pounder", 740],
+  ["🍔 McDouble", 400],
+  ["🍔 Cheeseburger", 300],
+  ["🍔 Hamburger", 250],
+  ["🐔 McChicken", 400],
+  ["🐔 McCrispy", 470],
+  ["🍗 McNuggets (10pc)", 410],
+  ["🍗 McNuggets (6pc)", 250],
+  ["🐟 Filet-O-Fish", 390],
+  ["🍟 Fries (Small)", 230],
+  ["🍟 Fries (Medium)", 340],
+  ["🍟 Fries (Large)", 480],
+  ["🥧 Apple Pie", 230],
+  ["🍦 McFlurry Oreo", 510],
+  ["🥤 Choc Shake (M)", 630],
+  ["🍦 Hot Fudge Sundae", 330],
+  ["🥤 Coca-Cola (M)", 200],
+  ["🥤 Sprite (M)", 200],
+  ["🫧 Diet Coke (M)", 0],
+  ["🧇 Hotcakes", 580],
+  ["🥚 Sausage McMuffin w/ Egg", 480],
+  ["🥚 Egg McMuffin", 310],
+  ["🥔 Hash Browns", 140],
+];
+
+const AV_STYLE = "bottts-neutral"; // crazy little robots
+const avatarURL = seed =>
+  `https://api.dicebear.com/9.x/${AV_STYLE}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=transparent`;
+
+// ---------- state ----------
+const cart = new Map();          // name -> qty
+let avatarSeed = randomSeed();
+const $ = id => document.getElementById(id);
+
+function randomSeed(){ return Math.random().toString(36).slice(2,10); }
+
+// ---------- build menu ----------
+function buildMenu(){
+  const wrap = $("menu");
+  MENU.forEach(([nm,kc],i)=>{
+    const el = document.createElement("div");
+    el.className = "item";
+    el.dataset.i = i;
+    el.innerHTML = `<span class="nm">${nm}</span>
+                    <span class="kc">${kc}</span>
+                    <span class="qty"></span>`;
+    el.addEventListener("click", ()=>addItem(i, el));
+    el.addEventListener("contextmenu", e=>{e.preventDefault();removeItem(i, el);});
+    wrap.appendChild(el);
+  });
+}
+function addItem(i, el){
+  cart.set(i, (cart.get(i)||0)+1);
+  refreshItem(i, el); recalc();
+}
+function removeItem(i, el){
+  const q=(cart.get(i)||0)-1;
+  if(q<=0) cart.delete(i); else cart.set(i,q);
+  refreshItem(i, el); recalc();
+}
+function refreshItem(i, el){
+  const q=cart.get(i)||0;
+  el.classList.toggle("picked", q>0);
+  el.querySelector(".qty").textContent = q>0? "x"+q : "";
+}
+function totalCals(){
+  let t=0; cart.forEach((q,i)=>t+=MENU[i][1]*q); return t;
+}
+function summary(){
+  const parts=[];
+  cart.forEach((q,i)=>parts.push((q>1?q+"× ":"")+MENU[i][0].replace(/^\S+\s/,"")));
+  return parts.join(", ");
+}
+function recalc(){
+  const t=totalCals();
+  $("total").textContent = "TOTAL: "+t.toLocaleString()+" KCAL";
+  $("submit").disabled = !( $("name").value.trim() && t>0 );
+}
+
+// ---------- avatar ----------
+function refreshAvatar(){
+  const seed = ($("name").value.trim()||"anon")+"::"+avatarSeed;
+  $("avatar").src = avatarURL(seed);
+}
+
+// ---------- storage layer (local OR jsonbin) ----------
+const useCloud = !!(CONFIG.BIN_ID && CONFIG.MASTER_KEY);
+const LS_KEY = "mcmaxx_entries_v1";
+const binURL = CONFIG.BIN_ID ? `https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}` : "";
+
+async function loadEntries(){
+  if(!useCloud){
+    try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); }catch{ return []; }
+  }
+  const r = await fetch(binURL+"/latest", {headers:{"X-Master-Key":CONFIG.MASTER_KEY}});
+  if(!r.ok) throw new Error("read "+r.status);
+  const j = await r.json();
+  return (j.record && j.record.entries) || [];
+}
+async function saveEntries(entries){
+  if(!useCloud){
+    localStorage.setItem(LS_KEY, JSON.stringify(entries)); return;
+  }
+  const r = await fetch(binURL, {
+    method:"PUT",
+    headers:{"Content-Type":"application/json","X-Master-Key":CONFIG.MASTER_KEY},
+    body:JSON.stringify({entries}),
+  });
+  if(!r.ok) throw new Error("write "+r.status);
+}
+
+// ---------- leaderboard render ----------
+function renderBoard(entries){
+  const board = $("board");
+  board.innerHTML="";
+  const sorted = [...entries].sort((a,b)=>b.calories-a.calories).slice(0,25);
+  const medal = ["gold","silver","bronze"];
+  sorted.forEach((e,idx)=>{
+    const li=document.createElement("li");
+    li.className="row "+(medal[idx]||"");
+    const rank = idx===0?"👑":(idx+1);
+    li.innerHTML=`
+      <span class="pos">${rank}</span>
+      <img src="${avatarURL(e.name+'::'+(e.seed||''))}" alt="">
+      <span class="who">
+        <span class="name">${escapeHtml(e.name)}</span>
+        <span class="ate">${escapeHtml(e.summary||'')}</span>
+      </span>
+      <span class="cal">${e.calories.toLocaleString()}</span>`;
+    board.appendChild(li);
+  });
+  $("boardStatus").textContent = sorted.length? "" : "no gluttons yet — be the first";
+}
+function escapeHtml(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+async function refreshBoard(){
+  try{
+    const entries = await loadEntries();
+    renderBoard(entries);
+  }catch(err){
+    $("boardStatus").textContent = "board error: "+err.message;
+    $("boardStatus").classList.add("err");
+  }
+}
+
+// ---------- submit ----------
+async function submit(){
+  const name=$("name").value.trim();
+  const cals=totalCals();
+  if(!name || cals<=0) return;
+  const btn=$("submit"); btn.disabled=true; btn.textContent="UPLOADING…";
+  try{
+    const entries = await loadEntries();
+    const entry={ name, seed:avatarSeed, calories:cals, summary:summary(), ts:Date.now() };
+    // keep each player's single BEST run
+    const existing = entries.find(e=>e.name.toLowerCase()===name.toLowerCase());
+    if(existing){ if(cals>existing.calories) Object.assign(existing,entry); }
+    else entries.push(entry);
+    await saveEntries(entries);
+    renderBoard(entries);
+    toast("🔥 "+cals.toLocaleString()+" KCAL LOGGED 🔥");
+    cart.clear();
+    document.querySelectorAll(".item").forEach(el=>{el.classList.remove("picked");el.querySelector(".qty").textContent="";});
+    recalc();
+  }catch(err){
+    toast("UPLOAD FAILED: "+err.message);
+  }finally{
+    btn.textContent="SLAM IT ON THE BOARD"; recalc();
+  }
+}
+
+// ---------- toast ----------
+let toastT;
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+// ---------- init ----------
+buildMenu();
+refreshAvatar();
+refreshBoard();
+$("mode").textContent = useCloud ? "shared with your crew ☁️" : "saved locally (solo mode)";
+$("name").addEventListener("input", ()=>{refreshAvatar();recalc();});
+$("reroll").addEventListener("click", ()=>{avatarSeed=randomSeed();refreshAvatar();});
+$("submit").addEventListener("click", submit);
+// light auto-refresh so the board stays live during a session
+if(useCloud) setInterval(refreshBoard, 20000);
+</script>
+</body>
+</html>
