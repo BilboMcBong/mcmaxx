@@ -6,194 +6,215 @@
 <title>McMAXX — MAXIMUM CALORIE ARENA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Luckiest+Guy&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#05060a;
-    --neon:#39ff14;
-    --hot:#ff2a2a;
-    --gold:#ffd000;
-    --cyan:#00e5ff;
-    --panel:#0b0f1a;
-    --grid:rgba(57,255,20,.08);
+    --red:#e60023;
+    --pink:#ff2d6f;
+    --yellow:#ffd200;
+    --cyan:#22c1e6;
+    --ink:#111;
+    --paper:#fff3cf;
+    --panel:#ffffff;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:#e8ffe8}
+  html,body{margin:0;padding:0}
   body{
-    font-family:'VT323',monospace;
-    font-size:22px;
-    min-height:100vh;
-    overflow-x:hidden;
-    background-image:
-      linear-gradient(var(--grid) 1px,transparent 1px),
-      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-    background-size:32px 32px;
+    font-family:'Baloo 2',system-ui,sans-serif;font-weight:700;color:var(--ink);
+    background-color:var(--paper);
+    background-image:radial-gradient(circle, rgba(230,0,35,.16) 2px, transparent 2.2px);
+    background-size:18px 18px;
+    min-height:100vh;overflow-x:hidden;
   }
-  /* CRT scanline + flicker overlay */
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);
-    mix-blend-mode:multiply;
-  }
-  body::after{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;
-    background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);
-  }
-  .pixel{font-family:'Press Start 2P',monospace}
+  /* comic display fonts */
+  .bangers{font-family:'Bangers',cursive;letter-spacing:1.5px;font-weight:400}
+  .lucky{font-family:'Luckiest Guy',cursive;font-weight:400}
 
-  header{
-    text-align:center;padding:28px 16px 8px;position:relative;z-index:1;
+  /* ---------- header + sunburst ---------- */
+  header{position:relative;text-align:center;padding:46px 16px 30px;overflow:hidden}
+  .sunburst{
+    position:absolute;top:50%;left:50%;width:180vmax;height:180vmax;
+    transform:translate(-50%,-50%);z-index:0;
+    background:repeating-conic-gradient(from 0deg,
+      rgba(255,210,0,.9) 0deg 9deg, rgba(255,45,111,.9) 9deg 18deg);
+    animation:spin 40s linear infinite;filter:saturate(1.1);
+    -webkit-mask-image:radial-gradient(circle, #000 22%, transparent 60%);
+            mask-image:radial-gradient(circle, #000 22%, transparent 60%);
+    opacity:.85;
   }
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  header .inner{position:relative;z-index:1}
   h1.title{
-    font-family:'Press Start 2P',monospace;
-    font-size:clamp(24px,7vw,64px);
-    margin:0;line-height:1.15;
-    color:var(--gold);
-    text-shadow:
-      3px 3px 0 var(--hot),
-      -2px -2px 0 var(--cyan),
-      0 0 18px rgba(255,208,0,.6);
-    animation:wob 3s ease-in-out infinite;
+    font-family:'Bangers',cursive;font-size:clamp(46px,13vw,120px);margin:0;line-height:.9;
+    color:#fff;
+    -webkit-text-stroke:3px var(--ink);
+    text-shadow:6px 6px 0 var(--ink), 10px 10px 0 var(--red);
+    transform:rotate(-3deg);
   }
-  @keyframes wob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
-  .subtitle{
-    font-family:'Press Start 2P',monospace;font-size:clamp(9px,2.2vw,13px);
-    color:var(--neon);margin-top:14px;letter-spacing:1px;
-    text-shadow:0 0 10px rgba(57,255,20,.7);
+  .tag{
+    display:inline-block;margin-top:18px;transform:rotate(2deg);
+    background:var(--ink);color:var(--yellow);font-family:'Bangers',cursive;
+    font-size:clamp(14px,3.5vw,24px);padding:6px 18px;border:3px solid #fff;border-radius:6px;
+    box-shadow:5px 5px 0 var(--red);
   }
-  .blink{animation:blink 1s steps(2,start) infinite}
-  @keyframes blink{to{visibility:hidden}}
 
-  main{
-    max-width:1080px;margin:0 auto;padding:12px 16px 80px;
-    display:grid;grid-template-columns:1fr 1fr;gap:20px;position:relative;z-index:1;
-  }
-  @media(max-width:840px){main{grid-template-columns:1fr}}
+  main{max-width:1120px;margin:0 auto;padding:8px 18px 90px;
+    display:grid;grid-template-columns:1fr 1fr;gap:26px;position:relative;z-index:1}
+  @media(max-width:860px){main{grid-template-columns:1fr}}
 
+  /* ---------- comic panels ---------- */
   .panel{
-    background:linear-gradient(180deg,var(--panel),#070a12);
-    border:3px solid var(--neon);
-    border-radius:6px;
-    box-shadow:0 0 0 3px #000,0 0 22px rgba(57,255,20,.25),inset 0 0 30px rgba(57,255,20,.05);
-    padding:18px;
+    background:var(--panel);border:5px solid var(--ink);border-radius:10px;
+    box-shadow:10px 10px 0 var(--ink);padding:20px;
   }
-  .panel h2{
-    font-family:'Press Start 2P',monospace;font-size:13px;margin:0 0 16px;
-    color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,.6);
+  .panel:first-of-type{transform:rotate(-.6deg)}
+  .panel:last-of-type{transform:rotate(.5deg)}
+  .banner{
+    display:inline-block;font-family:'Bangers',cursive;font-size:24px;letter-spacing:1px;
+    background:var(--yellow);color:var(--ink);border:4px solid var(--ink);border-radius:6px;
+    padding:2px 16px;margin:-36px 0 18px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--red);
   }
 
-  label.fld{display:block;font-size:20px;color:var(--gold);margin:14px 0 4px}
+  label.fld{display:block;font-size:19px;color:var(--red);margin:16px 0 5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
   input[type=text]{
-    width:100%;background:#02030a;border:2px solid var(--cyan);color:var(--neon);
-    font-family:'VT323',monospace;font-size:24px;padding:10px 12px;border-radius:4px;outline:none;
+    width:100%;background:#fff;border:4px solid var(--ink);color:var(--ink);
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;padding:10px 14px;border-radius:8px;outline:none;
   }
-  input[type=text]:focus{box-shadow:0 0 14px rgba(0,229,255,.6)}
+  input[type=text]:focus{box-shadow:5px 5px 0 var(--cyan)}
+  input[type=text]::placeholder{color:#bbb}
 
-  .avatar-preview{display:flex;align-items:center;gap:14px;margin-top:14px}
-  .avatar-preview img{
-    width:84px;height:84px;background:#000;border:2px solid var(--hot);border-radius:6px;
-    box-shadow:0 0 14px rgba(255,42,42,.5);image-rendering:pixelated;
+  /* ---------- avatar ---------- */
+  .avatar-wrap{display:flex;align-items:center;gap:16px;margin-top:16px}
+  .avatar-frame{
+    position:relative;width:96px;height:96px;flex:0 0 auto;
+    border-radius:50%;border:5px solid var(--ink);overflow:hidden;background:var(--cyan);
+    box-shadow:5px 5px 0 var(--red);
   }
+  .avatar-frame img{width:100%;height:100%;display:block;
+    filter:contrast(1.15) saturate(1.35);}
   .reroll{
-    font-family:'Press Start 2P',monospace;font-size:9px;cursor:pointer;
-    background:#000;color:var(--gold);border:2px solid var(--gold);padding:8px 10px;border-radius:4px;
+    font-family:'Bangers',cursive;font-size:18px;letter-spacing:1px;cursor:pointer;
+    background:var(--cyan);color:var(--ink);border:4px solid var(--ink);padding:8px 14px;border-radius:8px;
+    box-shadow:4px 4px 0 var(--ink);transition:transform .05s,box-shadow .05s;
   }
-  .reroll:hover{background:var(--gold);color:#000}
+  .reroll:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
 
-  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:420px;overflow-y:auto;padding-right:6px}
-  @media(max-width:480px){.menu-grid{grid-template-columns:1fr}}
+  /* ---------- menu ---------- */
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-height:430px;overflow-y:auto;padding:4px 6px 4px 2px;margin-top:6px}
+  @media(max-width:500px){.menu-grid{grid-template-columns:1fr}}
   .item{
-    display:flex;justify-content:space-between;align-items:center;gap:6px;
-    background:#02030a;border:2px solid #1d3b1d;border-radius:4px;padding:8px 10px;cursor:pointer;
-    transition:transform .05s,border-color .1s,background .1s;user-select:none;
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    background:#fff;border:3px solid var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer;
+    box-shadow:3px 3px 0 var(--ink);transition:transform .06s,box-shadow .06s,background .1s;user-select:none;
   }
-  .item:hover{border-color:var(--neon)}
-  .item.picked{border-color:var(--hot);background:rgba(255,42,42,.12);box-shadow:0 0 12px rgba(255,42,42,.35)}
-  .item .nm{font-size:19px;line-height:1.05}
-  .item .kc{font-size:15px;color:var(--gold);white-space:nowrap}
-  .item .qty{
-    font-family:'Press Start 2P',monospace;font-size:9px;color:var(--hot);
-    min-width:22px;text-align:right;
-  }
+  .item:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .item:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+  .item.picked{background:var(--pink);color:#fff;border-color:var(--ink)}
+  .item .nm{font-size:17px;line-height:1.05;font-weight:700}
+  .item .kc{font-size:15px;font-weight:800;white-space:nowrap;background:var(--yellow);color:var(--ink);border:2px solid var(--ink);border-radius:20px;padding:0 8px}
+  .item.picked .kc{background:#fff}
+  .item .qty{font-family:'Luckiest Guy',cursive;font-size:14px;min-width:24px;text-align:right;color:var(--yellow);text-shadow:1px 1px 0 var(--ink)}
 
-  .total{
-    font-family:'Press Start 2P',monospace;font-size:16px;text-align:center;margin:16px 0;
-    color:var(--hot);text-shadow:0 0 12px rgba(255,42,42,.7);
-  }
+  /* ---------- total speech bubble ---------- */
+  .total-bubble{position:relative;margin:22px auto 18px;max-width:320px;
+    background:#fff;border:5px solid var(--ink);border-radius:26px;padding:14px 10px;text-align:center;
+    box-shadow:6px 6px 0 var(--ink)}
+  .total-bubble:after{content:"";position:absolute;left:40px;bottom:-26px;
+    border:14px solid transparent;border-top-color:var(--ink);border-bottom:0}
+  .total-bubble:before{content:"";position:absolute;left:44px;bottom:-16px;z-index:1;
+    border:10px solid transparent;border-top-color:#fff;border-bottom:0}
+  .total-bubble .lucky{font-size:30px;color:var(--red);display:block;line-height:1}
+  .total-bubble small{font-family:'Bangers',cursive;font-size:15px;letter-spacing:1px;color:var(--ink)}
+
   .btn-submit{
-    width:100%;font-family:'Press Start 2P',monospace;font-size:14px;cursor:pointer;
-    background:var(--hot);color:#fff;border:none;padding:16px;border-radius:6px;
-    text-shadow:2px 2px 0 #7a0000;box-shadow:0 6px 0 #7a0000,0 0 20px rgba(255,42,42,.6);
+    width:100%;font-family:'Bangers',cursive;font-size:30px;letter-spacing:1.5px;cursor:pointer;
+    background:var(--red);color:#fff;border:5px solid var(--ink);padding:14px;border-radius:12px;
+    text-shadow:2px 2px 0 var(--ink);box-shadow:7px 7px 0 var(--ink);
     transition:transform .05s,box-shadow .05s;
   }
-  .btn-submit:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0000}
-  .btn-submit:disabled{background:#333;box-shadow:0 6px 0 #111;cursor:not-allowed;color:#777;text-shadow:none}
+  .btn-submit:active{transform:translate(7px,7px);box-shadow:0 0 0 var(--ink)}
+  .btn-submit:disabled{background:#c9c4b4;color:#fff;cursor:not-allowed;box-shadow:7px 7px 0 #8a8676;text-shadow:none}
 
-  /* leaderboard */
-  ol.board{list-style:none;margin:0;padding:0;counter-reset:rank}
+  /* ---------- leaderboard ---------- */
+  ol.board{list-style:none;margin:6px 0 0;padding:0}
   li.row{
-    display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:2px dashed #143a14;
-    animation:pop .35s ease;
+    display:flex;align-items:center;gap:14px;padding:12px;margin-bottom:12px;
+    background:#fff;border:4px solid var(--ink);border-radius:10px;box-shadow:5px 5px 0 var(--ink);
+    animation:popin .45s cubic-bezier(.2,1.5,.4,1) both;
   }
-  @keyframes pop{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-  li.row .pos{
-    font-family:'Press Start 2P',monospace;font-size:14px;color:var(--gold);min-width:44px;
-  }
-  li.row img{width:52px;height:52px;border:2px solid var(--cyan);border-radius:6px;background:#000;image-rendering:pixelated}
+  @keyframes popin{0%{opacity:0;transform:scale(0) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  li.row .pos{font-family:'Luckiest Guy',cursive;font-size:26px;min-width:46px;text-align:center;
+    color:var(--ink);text-shadow:2px 2px 0 var(--yellow)}
+  .av{position:relative;width:60px;height:60px;flex:0 0 auto}
+  .av .burst{position:absolute;inset:-14px;border-radius:50%;z-index:0;
+    background:repeating-conic-gradient(from 0deg,var(--yellow) 0deg 12deg, var(--red) 12deg 24deg);
+    animation:spin 12s linear infinite;
+    -webkit-mask-image:radial-gradient(circle,#000 30%,transparent 72%);
+            mask-image:radial-gradient(circle,#000 30%,transparent 72%)}
+  .av img{position:relative;z-index:1;width:60px;height:60px;border-radius:50%;
+    border:4px solid var(--ink);background:var(--cyan);display:block;filter:contrast(1.15) saturate(1.35)}
   li.row .who{flex:1;min-width:0}
-  li.row .who .name{font-size:24px;color:#eaffea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  li.row .who .ate{font-size:15px;color:#7fbf7f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  li.row .cal{font-family:'Press Start 2P',monospace;font-size:14px;color:var(--hot);text-shadow:0 0 8px rgba(255,42,42,.6);white-space:nowrap}
-  li.row.gold{background:linear-gradient(90deg,rgba(255,208,0,.15),transparent)}
-  li.row.gold .pos{color:#fff;text-shadow:0 0 10px var(--gold)}
-  li.row.silver{background:linear-gradient(90deg,rgba(200,200,220,.10),transparent)}
-  li.row.bronze{background:linear-gradient(90deg,rgba(205,127,50,.12),transparent)}
+  li.row .who .name{font-size:24px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  li.row .who .ate{font-size:14px;font-weight:600;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  li.row .cal{font-family:'Luckiest Guy',cursive;font-size:20px;color:#fff;white-space:nowrap;
+    background:var(--red);border:3px solid var(--ink);border-radius:20px;padding:2px 12px;transform:rotate(3deg)}
+  li.row.gold{background:var(--yellow)}
+  li.row.silver{background:#e9e9ef}
+  li.row.bronze{background:#f3cfa0}
 
-  .status{font-size:16px;text-align:center;margin-top:12px;color:#5f9f5f}
-  .status.err{color:var(--hot)}
-  .footer{text-align:center;font-size:15px;color:#3f6f3f;padding:20px}
-  .footer code{color:var(--gold)}
+  .status{font-size:16px;text-align:center;margin-top:12px;color:#8a8676;font-weight:700}
+  .status.err{color:var(--red)}
+  .footer{text-align:center;font-size:15px;color:#9a8f6f;padding:22px;font-weight:600}
+  .footer code{color:var(--red)}
 
-  /* toast */
+  /* ---------- POW toast ---------- */
   #toast{
-    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120%);
-    background:#000;border:3px solid var(--gold);color:var(--gold);
-    font-family:'Press Start 2P',monospace;font-size:11px;padding:14px 18px;border-radius:6px;
-    box-shadow:0 0 24px rgba(255,208,0,.6);z-index:10000;transition:transform .3s;text-align:center;
+    position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(0) rotate(-12deg);
+    z-index:10000;pointer-events:none;
+    font-family:'Bangers',cursive;font-size:clamp(34px,8vw,64px);letter-spacing:2px;color:var(--yellow);
+    background:var(--red);border:6px solid var(--ink);padding:18px 34px;border-radius:14px;text-align:center;
+    text-shadow:3px 3px 0 var(--ink);box-shadow:9px 9px 0 var(--ink);
+    transition:transform .3s cubic-bezier(.2,1.6,.4,1);
   }
-  #toast.show{transform:translateX(-50%) translateY(0)}
+  #toast.show{transform:translate(-50%,-50%) scale(1) rotate(-6deg)}
 </style>
 </head>
 <body>
 <header>
-  <h1 class="title">McMAXX</h1>
-  <div class="subtitle">◆ MAXIMUM&nbsp;CALORIE&nbsp;ARENA ◆<br><span class="blink">INSERT COIN — EAT TO WIN</span></div>
+  <div class="sunburst"></div>
+  <div class="inner">
+    <h1 class="title">McMAXX</h1>
+    <div class="tag">★ MAXIMUM CALORIE ARENA ★ EAT TO WIN ★</div>
+  </div>
 </header>
 
 <main>
   <!-- LEFT: entry -->
   <section class="panel">
-    <h2>&gt; NEW RUN</h2>
+    <span class="banner">NEW RUN!</span>
 
-    <label class="fld" for="name">PLAYER TAG</label>
-    <input id="name" type="text" maxlength="16" placeholder="e.g. GREASE_GOBLIN" autocomplete="off" />
+    <label class="fld" for="name">Player Tag</label>
+    <input id="name" type="text" maxlength="16" placeholder="e.g. GREASE GOBLIN" autocomplete="off" />
 
-    <div class="avatar-preview">
-      <img id="avatar" alt="your avatar" />
-      <button class="reroll" id="reroll">RE-ROLL BEAST</button>
+    <div class="avatar-wrap">
+      <div class="avatar-frame"><img id="avatar" alt="your avatar" /></div>
+      <button class="reroll" id="reroll">RE-ROLL!</button>
     </div>
 
-    <label class="fld">WHAT DID YOU DESTROY?</label>
+    <label class="fld">What did you destroy?</label>
     <div class="menu-grid" id="menu"></div>
 
-    <div class="total" id="total">TOTAL: 0 KCAL</div>
-    <button class="btn-submit" id="submit" disabled>SLAM IT ON THE BOARD</button>
+    <div class="total-bubble">
+      <span class="lucky" id="totalNum">0</span>
+      <small>KCAL OF GLORY</small>
+    </div>
+    <button class="btn-submit" id="submit" disabled>SLAM IT!</button>
     <div class="status" id="entryStatus"></div>
   </section>
 
   <!-- RIGHT: leaderboard -->
   <section class="panel">
-    <h2>&gt; HALL OF GLUTTONY</h2>
+    <span class="banner">HALL OF GLUTTONY!</span>
     <ol class="board" id="board"></ol>
     <div class="status" id="boardStatus">loading…</div>
   </section>
@@ -254,15 +275,15 @@ const MENU = [
   ["🥔 Hash Browns", 140],
 ];
 
-const AV_STYLE = "bottts-neutral"; // crazy little robots
+// pop-art comic-style people avatars
+const AV_STYLE = "open-peeps";
 const avatarURL = seed =>
-  `https://api.dicebear.com/9.x/${AV_STYLE}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=transparent`;
+  `https://api.dicebear.com/9.x/${AV_STYLE}/svg?seed=${encodeURIComponent(seed)}`;
 
 // ---------- state ----------
-const cart = new Map();          // name -> qty
+const cart = new Map();          // idx -> qty
 let avatarSeed = randomSeed();
 const $ = id => document.getElementById(id);
-
 function randomSeed(){ return Math.random().toString(36).slice(2,10); }
 
 // ---------- build menu ----------
@@ -270,41 +291,21 @@ function buildMenu(){
   const wrap = $("menu");
   MENU.forEach(([nm,kc],i)=>{
     const el = document.createElement("div");
-    el.className = "item";
-    el.dataset.i = i;
-    el.innerHTML = `<span class="nm">${nm}</span>
-                    <span class="kc">${kc}</span>
-                    <span class="qty"></span>`;
+    el.className = "item"; el.dataset.i = i;
+    el.innerHTML = `<span class="nm">${nm}</span><span class="kc">${kc}</span><span class="qty"></span>`;
     el.addEventListener("click", ()=>addItem(i, el));
     el.addEventListener("contextmenu", e=>{e.preventDefault();removeItem(i, el);});
     wrap.appendChild(el);
   });
 }
-function addItem(i, el){
-  cart.set(i, (cart.get(i)||0)+1);
-  refreshItem(i, el); recalc();
-}
-function removeItem(i, el){
-  const q=(cart.get(i)||0)-1;
-  if(q<=0) cart.delete(i); else cart.set(i,q);
-  refreshItem(i, el); recalc();
-}
-function refreshItem(i, el){
-  const q=cart.get(i)||0;
-  el.classList.toggle("picked", q>0);
-  el.querySelector(".qty").textContent = q>0? "x"+q : "";
-}
-function totalCals(){
-  let t=0; cart.forEach((q,i)=>t+=MENU[i][1]*q); return t;
-}
-function summary(){
-  const parts=[];
-  cart.forEach((q,i)=>parts.push((q>1?q+"× ":"")+MENU[i][0].replace(/^\S+\s/,"")));
-  return parts.join(", ");
-}
+function addItem(i, el){ cart.set(i,(cart.get(i)||0)+1); refreshItem(i,el); recalc(); }
+function removeItem(i, el){ const q=(cart.get(i)||0)-1; if(q<=0)cart.delete(i);else cart.set(i,q); refreshItem(i,el); recalc(); }
+function refreshItem(i, el){ const q=cart.get(i)||0; el.classList.toggle("picked",q>0); el.querySelector(".qty").textContent=q>0?"x"+q:""; }
+function totalCals(){ let t=0; cart.forEach((q,i)=>t+=MENU[i][1]*q); return t; }
+function summary(){ const p=[]; cart.forEach((q,i)=>p.push((q>1?q+"× ":"")+MENU[i][0].replace(/^\S+\s/,""))); return p.join(", "); }
 function recalc(){
   const t=totalCals();
-  $("total").textContent = "TOTAL: "+t.toLocaleString()+" KCAL";
+  $("totalNum").textContent = t.toLocaleString();
   $("submit").disabled = !( $("name").value.trim() && t>0 );
 }
 
@@ -314,45 +315,40 @@ function refreshAvatar(){
   $("avatar").src = avatarURL(seed);
 }
 
-// ---------- storage layer (local OR jsonbin) ----------
+// ---------- storage layer ----------
 const useCloud = !!(CONFIG.BIN_ID && CONFIG.MASTER_KEY);
 const LS_KEY = "mcmaxx_entries_v1";
 const binURL = CONFIG.BIN_ID ? `https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}` : "";
 
 async function loadEntries(){
-  if(!useCloud){
-    try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); }catch{ return []; }
-  }
-  const r = await fetch(binURL+"/latest", {headers:{"X-Master-Key":CONFIG.MASTER_KEY}});
+  if(!useCloud){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); }catch{ return []; } }
+  const r = await fetch(binURL+"/latest",{headers:{"X-Master-Key":CONFIG.MASTER_KEY}});
   if(!r.ok) throw new Error("read "+r.status);
   const j = await r.json();
   return (j.record && j.record.entries) || [];
 }
 async function saveEntries(entries){
-  if(!useCloud){
-    localStorage.setItem(LS_KEY, JSON.stringify(entries)); return;
-  }
-  const r = await fetch(binURL, {
-    method:"PUT",
+  if(!useCloud){ localStorage.setItem(LS_KEY,JSON.stringify(entries)); return; }
+  const r = await fetch(binURL,{method:"PUT",
     headers:{"Content-Type":"application/json","X-Master-Key":CONFIG.MASTER_KEY},
-    body:JSON.stringify({entries}),
-  });
+    body:JSON.stringify({entries})});
   if(!r.ok) throw new Error("write "+r.status);
 }
 
-// ---------- leaderboard render ----------
+// ---------- leaderboard ----------
 function renderBoard(entries){
-  const board = $("board");
-  board.innerHTML="";
+  const board = $("board"); board.innerHTML="";
   const sorted = [...entries].sort((a,b)=>b.calories-a.calories).slice(0,25);
   const medal = ["gold","silver","bronze"];
   sorted.forEach((e,idx)=>{
     const li=document.createElement("li");
     li.className="row "+(medal[idx]||"");
-    const rank = idx===0?"👑":(idx+1);
+    li.style.animationDelay=(idx*0.05)+"s";
+    const pos = idx===0?"👑":(idx+1);
+    const burst = idx===0?'<span class="burst"></span>':'';
     li.innerHTML=`
-      <span class="pos">${rank}</span>
-      <img src="${avatarURL(e.name+'::'+(e.seed||''))}" alt="">
+      <span class="pos">${pos}</span>
+      <span class="av">${burst}<img src="${avatarURL(e.name+'::'+(e.seed||''))}" alt=""></span>
       <span class="who">
         <span class="name">${escapeHtml(e.name)}</span>
         <span class="ate">${escapeHtml(e.summary||'')}</span>
@@ -360,62 +356,46 @@ function renderBoard(entries){
       <span class="cal">${e.calories.toLocaleString()}</span>`;
     board.appendChild(li);
   });
-  $("boardStatus").textContent = sorted.length? "" : "no gluttons yet — be the first";
+  $("boardStatus").textContent = sorted.length? "" : "no gluttons yet — be the first!";
 }
 function escapeHtml(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
 async function refreshBoard(){
-  try{
-    const entries = await loadEntries();
-    renderBoard(entries);
-  }catch(err){
-    $("boardStatus").textContent = "board error: "+err.message;
-    $("boardStatus").classList.add("err");
-  }
+  try{ renderBoard(await loadEntries()); }
+  catch(err){ const s=$("boardStatus"); s.textContent="board error: "+err.message; s.classList.add("err"); }
 }
 
 // ---------- submit ----------
 async function submit(){
-  const name=$("name").value.trim();
-  const cals=totalCals();
+  const name=$("name").value.trim(); const cals=totalCals();
   if(!name || cals<=0) return;
-  const btn=$("submit"); btn.disabled=true; btn.textContent="UPLOADING…";
+  const btn=$("submit"); btn.disabled=true; const old=btn.textContent; btn.textContent="UPLOADING…";
   try{
     const entries = await loadEntries();
     const entry={ name, seed:avatarSeed, calories:cals, summary:summary(), ts:Date.now() };
-    // keep each player's single BEST run
     const existing = entries.find(e=>e.name.toLowerCase()===name.toLowerCase());
-    if(existing){ if(cals>existing.calories) Object.assign(existing,entry); }
-    else entries.push(entry);
+    if(existing){ if(cals>existing.calories) Object.assign(existing,entry); } else entries.push(entry);
     await saveEntries(entries);
     renderBoard(entries);
-    toast("🔥 "+cals.toLocaleString()+" KCAL LOGGED 🔥");
+    toast("POW! "+cals.toLocaleString()+"!");
     cart.clear();
     document.querySelectorAll(".item").forEach(el=>{el.classList.remove("picked");el.querySelector(".qty").textContent="";});
     recalc();
-  }catch(err){
-    toast("UPLOAD FAILED: "+err.message);
-  }finally{
-    btn.textContent="SLAM IT ON THE BOARD"; recalc();
-  }
+  }catch(err){ toast("FAIL: "+err.message); }
+  finally{ btn.textContent=old; recalc(); }
 }
 
 // ---------- toast ----------
 let toastT;
-function toast(msg){
-  const t=$("toast"); t.textContent=msg; t.classList.add("show");
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600);
-}
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2000); }
 
 // ---------- init ----------
-buildMenu();
-refreshAvatar();
-refreshBoard();
+buildMenu(); refreshAvatar(); refreshBoard();
 $("mode").textContent = useCloud ? "shared with your crew ☁️" : "saved locally (solo mode)";
 $("name").addEventListener("input", ()=>{refreshAvatar();recalc();});
 $("reroll").addEventListener("click", ()=>{avatarSeed=randomSeed();refreshAvatar();});
 $("submit").addEventListener("click", submit);
-// light auto-refresh so the board stays live during a session
 if(useCloud) setInterval(refreshBoard, 20000);
 </script>
 </body>
